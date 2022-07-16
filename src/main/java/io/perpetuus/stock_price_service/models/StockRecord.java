@@ -10,6 +10,9 @@ import javax.validation.constraints.Size;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import io.perpetuus.stock_price_service.utils.constraints.DateString;
+import io.perpetuus.stock_price_service.utils.constraints.ValidCurrency;
+
 @Document(collection = "stockRecords")
 public class StockRecord {
 
@@ -21,6 +24,7 @@ public class StockRecord {
     private String ticker;
 
     @NotBlank(message = "Date is required")
+    @DateString
     private String date;
 
     @NotNull(message = "Price is required")
@@ -28,6 +32,7 @@ public class StockRecord {
     private BigDecimal price;
 
     @NotNull(message = "Currency is required")
+    @ValidCurrency
     private String currency;
 
     @NotBlank(message = "Stock exchange is required")
