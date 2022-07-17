@@ -9,6 +9,7 @@ import javax.validation.ConstraintViolationException;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.perpetuus.stock_price_service.models.StockRecord;
+import io.perpetuus.stock_price_service.services.StockRecordService;
 import io.perpetuus.stock_price_service.utils.constraints.DateString;
 import io.perpetuus.stock_price_service.utils.response.RestResponse;
 
@@ -29,13 +31,16 @@ import io.perpetuus.stock_price_service.utils.response.RestResponse;
 @RestController
 @RequestMapping("/stock")
 public class StockController {
+
+    @Autowired
+    private StockRecordService stockRecordService; 
     
     @Validated
     @GetMapping("/historical")
     public List<StockRecord> getHistoricalStockData(
         @RequestParam(required = false) @NotBlank @Size(min = 2) String stockTicker
     ) {
-        return dummyStock();
+        return stockRecordService.findByTicker(stockTicker);
     }
     
     @Validated
@@ -43,19 +48,13 @@ public class StockController {
     public List<StockRecord> getDailyStockData(
         @RequestParam(required = false) @NotBlank @DateString String date
     ) {
-        return dummyStock();
+        return stockRecordService.findByDate(date);
     }
     
     @PostMapping
-    public String createStockRecord() {
-        return "New stock #1";
-    }
-
-    private List<StockRecord> dummyStock() {
-        var stocks = new ArrayList<StockRecord>();
+    public StockRecord createStockRecord() {
         var dummyStockRecord = new StockRecord("1", "PZU", "02-10-2022", BigDecimal.ONE, "PLN", "WSE");
-        stocks.add(dummyStockRecord);
-        return stocks;
+        return stockRecordService.saveStockRecord(dummyStockRecord);
     }
 
     @ExceptionHandler(ConstraintViolationException.class)

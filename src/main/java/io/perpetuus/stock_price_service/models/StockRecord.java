@@ -94,6 +94,6 @@ public class StockRecord {
     @Override
     public String toString() {
         return "Stock record [id=" + id + ", date=" + date + ", ticker=" + ticker 
-            + ", price=" + price + ", currency=" + currency + "]";
+            + ", price=" + price + ", currency=" + currency + ", market=" + market + "]";
     }
 }
