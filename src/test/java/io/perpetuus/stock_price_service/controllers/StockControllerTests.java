@@ -1,7 +1,11 @@
 package io.perpetuus.stock_price_service.controllers;
 
 import static org.hamcrest.Matchers.*;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -9,6 +13,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -19,6 +24,8 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import io.perpetuus.stock_price_service.StockPriceServiceApplication;
+import io.perpetuus.stock_price_service.models.StockRecord;
+import io.perpetuus.stock_price_service.services.StockRecordService;
 
 @SpringBootTest
 @ContextConfiguration(classes = { StockPriceServiceApplication.class })
@@ -27,6 +34,9 @@ public class StockControllerTests {
 
     @Autowired
     private WebApplicationContext webApplicationContext;
+
+    @MockBean
+    private StockRecordService stockRecordService;
 
     private MockMvc mvc;
 
@@ -37,6 +47,12 @@ public class StockControllerTests {
 
     @Test
     public void should_GetStocks_When_CorrectStockTickerParamValuePassed() throws Exception {
+        // given
+        var stocks = new ArrayList<StockRecord>();
+        var stock = new StockRecord("1", "PZU", "02-10-2022", BigDecimal.ONE, "PLN", "WSE");
+        stocks.add(stock);
+        when(stockRecordService.findByTicker("PZU")).thenReturn(stocks);
+
         // when
         var req = MockMvcRequestBuilders.get("/stock/historical?stockTicker={stockTicker}", "PZU");
 
@@ -81,6 +97,12 @@ public class StockControllerTests {
 
     @Test
     public void should_GetStocks_When_CorrectDateParamValuePassed() throws Exception {
+        // given
+        var stocks = new ArrayList<StockRecord>();
+        var stock = new StockRecord("1", "PZU", "02-10-2022", BigDecimal.ONE, "PLN", "WSE");
+        stocks.add(stock);
+        when(stockRecordService.findByDate("02-10-2022")).thenReturn(stocks);
+
         // when
         var req = MockMvcRequestBuilders.get("/stock/daily?date={date}", "02-10-2022");
 
