@@ -158,5 +158,24 @@ public class StockControllerTests {
             .andExpect(jsonPath("$.response").hasJsonPath())
             .andExpect(jsonPath("$.response", hasSize(1)));
     }
+
+    @Test
+    public void should_CreateStockRecord_When_RequestBodyIsValid() throws Exception {
+        // given
+        var content = "{ \"ticker\": \"AMD\", \"date\": \"10-02-2022\", \"price\": 12.32, \"currency\": \"USD\", \"market\": \"WSE\" }";
+
+        // when
+        var req = MockMvcRequestBuilders.post("/stock")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(content)
+            .accept(MediaType.APPLICATION_JSON);
+
+        // then
+        mvc.perform(req).andDo(MockMvcResultHandlers.print())
+            .andExpect(status().isCreated())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(jsonPath("$.response").hasJsonPath());
+
+    }
     
 }

@@ -52,9 +52,17 @@ public class StockController {
     }
     
     @PostMapping
-    public StockRecord createStockRecord() {
+    public ResponseEntity<RestResponse<StockRecord>> createStockRecord() {
         var dummyStockRecord = new StockRecord("1", "PZU", "02-10-2022", BigDecimal.ONE, "PLN", "WSE");
-        return stockRecordService.saveStockRecord(dummyStockRecord);
+        var createdStock = stockRecordService.saveStockRecord(dummyStockRecord);
+        
+        var response = new RestResponse<StockRecord>();
+        response.setResponse(createdStock);
+
+        return ResponseEntity
+            .status(HttpStatus.CREATED)
+            .header("Content-Type", MediaType.APPLICATION_JSON.toString())
+            .body(response);
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
@@ -65,7 +73,7 @@ public class StockController {
         for (ConstraintViolation<?> constraintViolation : errors) {
             messages.add(constraintViolation.getMessage());
         }
-        RestResponse<List<String>> response = new RestResponse<List<String>>();
+        var response = new RestResponse<List<String>>();
         response.setResponse(messages);
 
         return ResponseEntity
