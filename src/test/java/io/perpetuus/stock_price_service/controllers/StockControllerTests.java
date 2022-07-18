@@ -6,10 +6,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -175,7 +178,33 @@ public class StockControllerTests {
             .andExpect(status().isCreated())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.response").hasJsonPath());
+    }
 
+    @ParameterizedTest
+    @MethodSource("provideInvalidRequestBodies")
+    public void should_ThrowException_When_RequestBodyIsInvalid(String reqBody, String invalidField) throws Exception {
+        // when
+        var req = MockMvcRequestBuilders.post("/stock")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(reqBody)
+            .accept(MediaType.APPLICATION_JSON);
+
+        // then
+        mvc.perform(req).andDo(MockMvcResultHandlers.print())
+            .andExpect(status().isBadRequest())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(jsonPath("$.response").hasJsonPath())
+            .andExpect(jsonPath("$.response[0].field").value(invalidField));
+    }
+
+    private static Stream<Arguments> provideInvalidRequestBodies() {
+        return Stream.of(
+            Arguments.of("{ \"date\": \"10-02-2022\", \"price\": 12.32, \"currency\": \"USD\", \"market\": \"WSE\" }", "ticker"),
+            Arguments.of("{ \"ticker\": \"AMD\", \"price\": 12.32, \"currency\": \"USD\", \"market\": \"WSE\" }", "date"),
+            Arguments.of("{ \"ticker\": \"AMD\", \"date\": \"10-02-2022\", \"currency\": \"USD\", \"market\": \"WSE\" }", "price"),
+            Arguments.of("{ \"ticker\": \"AMD\", \"date\": \"10-02-2022\", \"price\": 12.32, \"market\": \"WSE\" }", "currency"),
+            Arguments.of("{ \"ticker\": \"AMD\", \"date\": \"10-02-2022\", \"price\": 12.32, \"currency\": \"USD\" }", "market")
+        );
     }
     
 }
