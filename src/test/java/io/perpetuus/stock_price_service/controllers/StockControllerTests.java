@@ -64,12 +64,12 @@ public class StockControllerTests {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$").hasJsonPath())
-            .andExpect(jsonPath("$[0].id").value(1))
-            .andExpect(jsonPath("$[0].ticker").value("PZU"))
-            .andExpect(jsonPath("$[0].date").value("02-10-2022"))
-            .andExpect(jsonPath("$[0].price").value(1))
-            .andExpect(jsonPath("$[0].currency").value("PLN"))
-            .andExpect(jsonPath("$[0].market").value("WSE"));
+            .andExpect(jsonPath("$.response[0].id").value(1))
+            .andExpect(jsonPath("$.response[0].ticker").value("PZU"))
+            .andExpect(jsonPath("$.response[0].date").value("02-10-2022"))
+            .andExpect(jsonPath("$.response[0].price").value(1))
+            .andExpect(jsonPath("$.response[0].currency").value("PLN"))
+            .andExpect(jsonPath("$.response[0].market").value("WSE"));
     }
 
     @Test
@@ -114,12 +114,12 @@ public class StockControllerTests {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$").hasJsonPath())
-            .andExpect(jsonPath("$[0].id").value(1))
-            .andExpect(jsonPath("$[0].ticker").value("PZU"))
-            .andExpect(jsonPath("$[0].date").value("02-10-2022"))
-            .andExpect(jsonPath("$[0].price").value(1))
-            .andExpect(jsonPath("$[0].currency").value("PLN"))
-            .andExpect(jsonPath("$[0].market").value("WSE"));
+            .andExpect(jsonPath("$.response[0].id").value(1))
+            .andExpect(jsonPath("$.response[0].ticker").value("PZU"))
+            .andExpect(jsonPath("$.response[0].date").value("02-10-2022"))
+            .andExpect(jsonPath("$.response[0].price").value(1))
+            .andExpect(jsonPath("$.response[0].currency").value("PLN"))
+            .andExpect(jsonPath("$.response[0].market").value("WSE"));
     }
 
     @Test

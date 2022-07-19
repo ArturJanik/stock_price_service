@@ -40,18 +40,22 @@ public class StockController {
     
     @Validated
     @GetMapping("/historical")
-    public List<StockRecord> getHistoricalStockData(
+    public ResponseEntity<RestResponse<List<StockRecord>>> getHistoricalStockData(
         @RequestParam(required = false) @NotBlank @Size(min = 2) String stockTicker
     ) {
-        return stockRecordService.findByTicker(stockTicker);
+        List<StockRecord> stocks = stockRecordService.findByTicker(stockTicker);
+
+        return ResponseEntityUtils.createSuccessfulGetResponse(stocks);
     }
     
     @Validated
     @GetMapping("/daily")
-    public List<StockRecord> getDailyStockData(
+    public ResponseEntity<RestResponse<List<StockRecord>>> getDailyStockData(
         @RequestParam(required = false) @NotBlank @DateString String date
     ) {
-        return stockRecordService.findByDate(date);
+        List<StockRecord> stocks = stockRecordService.findByDate(date);
+
+        return ResponseEntityUtils.createSuccessfulGetResponse(stocks);
     }
     
     @PostMapping
@@ -59,15 +63,17 @@ public class StockController {
         @Validated @RequestBody StockRecord record,
         BindingResult result
     ) throws Exception {
-
         List<ValidationError> errors = ValidationUtils.convertBindingResultToValidationErrors(result);
 
         if (!errors.isEmpty()) {
             throw new InvalidStockRecordRequestException(errors);
         } else {
             var newRecord = stockRecordService.saveStockRecord(record);
-        
-            return ResponseEntityUtils.createSuccessfulResponseEntity(newRecord);
+            return ResponseEntityUtils.createSuccessfulResponseEntity(
+                "Record added successfully",
+                HttpStatus.CREATED.value(),
+                newRecord
+            );
         }
     }
 
