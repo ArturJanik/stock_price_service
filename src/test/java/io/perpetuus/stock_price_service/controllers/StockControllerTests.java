@@ -1,6 +1,7 @@
 package io.perpetuus.stock_price_service.controllers;
 
 import static org.hamcrest.Matchers.*;
+import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -166,6 +167,10 @@ public class StockControllerTests {
     public void should_CreateStockRecord_When_RequestBodyIsValid() throws Exception {
         // given
         var content = "{ \"ticker\": \"AMD\", \"date\": \"10-02-2022\", \"price\": 12.32, \"currency\": \"USD\", \"market\": \"WSE\" }";
+        var stockRecord = new StockRecord(null, "AMD", "10-02-2022", BigDecimal.valueOf(12.32), "USD", "WSE");
+        when(stockRecordService.saveStockRecord(
+            (StockRecord)notNull()
+        )).thenReturn(stockRecord);
 
         // when
         var req = MockMvcRequestBuilders.post("/stock")
@@ -177,7 +182,10 @@ public class StockControllerTests {
         mvc.perform(req).andDo(MockMvcResultHandlers.print())
             .andExpect(status().isCreated())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-            .andExpect(jsonPath("$.response").hasJsonPath());
+            .andExpect(jsonPath("$.response").hasJsonPath())
+            .andExpect(jsonPath("$.response.ticker").value("AMD"))
+            .andExpect(jsonPath("$.response.date").value("10-02-2022"))
+            .andExpect(jsonPath("$.response.price").value(12.32));
     }
 
     @ParameterizedTest

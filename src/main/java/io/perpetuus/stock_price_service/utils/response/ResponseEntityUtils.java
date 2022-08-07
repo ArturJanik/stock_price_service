@@ -61,6 +61,19 @@ public class ResponseEntityUtils {
         return createResponseEntity(response);
     }
 
+    public static ResponseEntity<RestResponse<String>> createResponseEntityWithDataAccessError(
+        String error
+    ) {
+        var response = new RestResponseImpl<String>();
+        ResponseStatus responseStatus = getErrorResponseStatus("Data access error");
+
+        response.setResponse(error);
+        response.setResponseStatus(responseStatus);
+        response.setHttpStatusCode(HttpStatus.SERVICE_UNAVAILABLE.value());
+
+        return createResponseEntity(response);
+    }
+
     public static <T> ResponseEntity<RestResponse<T>> createSuccessfulResponseEntity(
         String message,
         int httpStatusCode,
